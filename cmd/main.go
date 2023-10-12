@@ -33,9 +33,23 @@ const tableName = "go-serverless"
 func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	switch req.HTTPMethod {
 	case "GET":
-		return handlers.GetUser(req, tableName, dynaClient)
+		switch req.Path {
+		case "/":
+			return handlers.GetUser(req, tableName, dynaClient)
+		case "/todos":
+			return handlers.FetchTODOItemsByUser(req, tableName, dynaClient)
+		default:
+			return handlers.UnhandledMethod()
+		}
 	case "POST":
-		return handlers.CreateUser(req, tableName, dynaClient)
+		switch req.Path {
+		case "/":
+			return handlers.CreateUser(req, tableName, dynaClient)
+		case "/todos":
+			return handlers.CreateOrUpdateTODOList(req, tableName, dynaClient)
+		default:
+			return handlers.UnhandledMethod()
+		}
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
 	case "DELETE":
