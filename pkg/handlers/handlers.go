@@ -11,9 +11,20 @@ import (
 )
 
 var ErrorMethodNotAllowed = "method not allowed"
+var OopsError = "oops where did this come from?"
+var UnknownGetPath = "unknown get path"
+var UnknownPostPath = "unknown post path"
+var UnknownPutPath = "unknown put path"
+var UnknownDeletePath = "unknown delete path"
 
 type ErrorBody struct {
 	ErrorMsg *string `json:"error,omitempty"`
+}
+
+type NotFoundResponse struct {
+	Path    string `json:"path"`
+	Method  string `json:"method"`
+	Message string `json:"message"`
 }
 
 func GetUser(req events.APIGatewayProxyRequest, tableName string, dynaClient dynamodbiface.DynamoDBAPI) (
@@ -78,6 +89,27 @@ func DeleteUser(req events.APIGatewayProxyRequest, tableName string, dynaClient 
 
 func UnhandledMethod() (*events.APIGatewayProxyResponse, error) {
 	return apiResponse(http.StatusMethodNotAllowed, ErrorMethodNotAllowed)
+}
+func GetUnhandledMethod(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	notFoundResponse := NotFoundResponse{
+		Path:    req.Path,
+		Method:  req.HTTPMethod,
+		Message: OopsError,
+	}
+
+	return apiResponse(http.StatusMethodNotAllowed, notFoundResponse)
+}
+
+func PostUnhandledMethod() (*events.APIGatewayProxyResponse, error) {
+	return apiResponse(http.StatusMethodNotAllowed, UnknownPostPath)
+}
+
+func PutUnhandledMethod() (*events.APIGatewayProxyResponse, error) {
+	return apiResponse(http.StatusMethodNotAllowed, UnknownPutPath)
+}
+
+func DeleteUnhandledMethod() (*events.APIGatewayProxyResponse, error) {
+	return apiResponse(http.StatusMethodNotAllowed, UnknownDeletePath)
 }
 
 // CreateOrUpdateTODOList creates or updates a TODO list for a given user email if the user exists

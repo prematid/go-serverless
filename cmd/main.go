@@ -39,7 +39,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 		case "/todos":
 			return handlers.FetchTODOItemsByUser(req, tableName, dynaClient)
 		default:
-			return handlers.UnhandledMethod()
+			return handlers.GetUnhandledMethod(req)
 		}
 	case "POST":
 		switch req.Path {
@@ -48,7 +48,7 @@ func handler(req events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse
 		case "/todos":
 			return handlers.CreateOrUpdateTODOList(req, tableName, dynaClient)
 		default:
-			return handlers.UnhandledMethod()
+			return handlers.PostUnhandledMethod()
 		}
 	case "PUT":
 		return handlers.UpdateUser(req, tableName, dynaClient)
